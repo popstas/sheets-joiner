@@ -8,7 +8,7 @@
   },
   "name": "sheets-joiner",
   "description": "Sheets joiner features: - join two tables by column - input from Google sheets, csv file or xlsx file - output rows that are present in both tables - output rows that are present in first table but absent in second table - output to console, csv file or xlsx file",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "bin": {
     "sheets-joiner": "./index.js"
