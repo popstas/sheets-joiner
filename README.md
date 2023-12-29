@@ -8,6 +8,11 @@ Sheets joiner features:
 - output rows that are present in first table but absent in second table
 - output to console, csv file or xlsx file
 
+## Install:
+```
+npm install -g sheets-joiner
+```
+
 ## Input:
 - `--table1` or `--sheet1` - first table
 - `--table2` or `--sheet2` - second table

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import fs from 'fs';
 import {createCommand} from "commander";
 import csv from 'csvtojson';
@@ -214,7 +215,6 @@ function joinTables(table1Data, table2Data, column1, column2) {
   const outputData = [];
   table1Data.forEach(row1 => {
     const row2 = table2Data.find(row2 => row1[column1] === row2[column2]);
-    // TODO: different column numbers
     if (row2) {
       outputData.push({...row1, ...row2});
     } else {
