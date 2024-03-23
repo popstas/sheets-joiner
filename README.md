@@ -3,10 +3,10 @@ Used npm packages: commander, csv2json, xlsx, google-spreadsheet
 
 Sheets joiner features:
 - join two tables by column
-- input from Google sheets, csv file or xlsx file
+- input from Google sheets, csv file, xlsx file or json file
 - output rows that are present in both tables
 - output rows that are present in first table but absent in second table
-- output to console, csv file or xlsx file
+- output to console, csv file, xlsx file or json file
 
 ## Install:
 ```

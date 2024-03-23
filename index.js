@@ -17,7 +17,7 @@ program
   .option('--mode <mode>', 'one of: intersect, join, absent, default: intersect', 'intersect')
   .option('--column1 <column1>', 'column name in first table, default: url', 'url')
   .option('--column2 <column2>', 'column name in second table, default: url', 'url')
-  .option('--output <output>', 'console, path to csv file, path to xlsx file, default: console', 'console')
+  .option('--output <output>', 'console, path to csv/xlsx/json file, default: console', 'console')
   .option('--csv-delimiter <csvDelimiter>', 'delimiter for csv file, default: `,`', ',')
   // .parse(process.argv);
   .parse(process.argv)
@@ -87,6 +87,9 @@ async function start() {
     const csv = json2csv(outputData, csvDelimiter);
     fs.writeFileSync(output, csv);
     console.log(`Saved to ${output}`);
+  } else if (output.endsWith('.json')) {
+    fs.writeFileSync(output, JSON.stringify(outputData, null, 2));
+    console.log(`Saved to ${output}`);
   } else if (output.endsWith('.xlsx')) {
     const wb = json2xlsx(outputData);
     xlsx.writeFile(wb, output);
@@ -121,9 +124,11 @@ async function readTable(table) {
     return await readCsv(table);
   } else if (table.endsWith('.xlsx')) {
     return await readXlsx(table);
+  } else if (table.endsWith('.json')) {
+    return readJson(table);
   } else {
     // program.help();
-    console.log('Error: table should be one of: Google sheets URL, csv file path, xlsx file path!');
+    console.log('Error: table should be one of: Google sheets URL, csv/xlsx/json file path!');
     process.exit(1);
   }
 }
@@ -158,6 +163,19 @@ async function readXlsx(xlsxPath) {
   return data;
 }
 
+function readJson(jsonPath) {
+  console.log("read jsonPath:", jsonPath);
+  const json = fs.readFileSync(jsonPath, 'utf8');
+  const data = JSON.parse(json);
+  let items = [];
+  if (data.items) items = data.items;
+  if (Array.isArray(data)) items = data;
+  console.log(`${items.length} items`);
+  console.log("first item:", items[0]);
+  return items;
+  // return false;
+}
+
 function getSheetId(sheetUrl) {
   const match = sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   if (!match) {
@@ -190,6 +208,7 @@ async function readGoogleSheets(googleSheetsUrl) {
 
 async function join(table1Data, table2Data, column1, column2, mode) {
   let outputData = [];
+  console.log(`Mode: ${mode}`);
   if (mode === 'intersect') {
     outputData = intersect(table1Data, table2Data, column1, column2);
   } else if (mode === 'join') {
@@ -213,6 +232,7 @@ function intersect(table1Data, table2Data, column1, column2) {
 
 function joinTables(table1Data, table2Data, column1, column2) {
   const outputData = [];
+  let i = 0;
   table1Data.forEach(row1 => {
     const row2 = table2Data.find(row2 => row1[column1] === row2[column2]);
     if (row2) {
@@ -225,6 +245,8 @@ function joinTables(table1Data, table2Data, column1, column2) {
       });
       outputData.push({...row2, ...row1});
     }
+    i++;
+    if (i % 100 === 0) console.log(`Processed ${i}`);
   });
   return outputData;
 }
